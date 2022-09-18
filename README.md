@@ -11,3 +11,5 @@ should create a `fugufugu` executable.
 `./fugufugu -url https://www.amazingcto.com`
 
 prints a report of all external scripts and images it found.
+
+**Only use on your own website!**
