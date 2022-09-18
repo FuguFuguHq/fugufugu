@@ -1,4 +1,4 @@
-![FuguFugu](logo.png?raw=true "FuguFugu")
+![FuguFugu](https://raw.githubusercontent.com/FuguFuguHq/fugufugu/main/Logo.png "FuguFugu")
 
 # FuguFugu
 
