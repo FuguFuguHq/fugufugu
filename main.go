@@ -122,7 +122,12 @@ func main() {
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Site", "Script", "Image", "Cookie"})
 
+	scripts := 0
+	images := 0
+
 	for _, p := range v {
+		scripts += p.ScriptCount
+		images += p.ImgCount
 		c, s, i := "", "", ""
 		if p.Cookie {
 			c = "Yes"
@@ -137,5 +142,7 @@ func main() {
 			{*p.Url, s, i, c},
 		})
 	}
+
+	fmt.Printf("Summary %s: %d scripts | %d images\n", checkUrl, scripts, images)
 	t.Render()
 }
