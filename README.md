@@ -7,6 +7,8 @@ often unclear what external resources your website uses. If you're in the EU, ea
 in the privacy statement. Each external resource can log the user IP and could - depending on the browser - set cookies.
 Each external script can undermine the security of your user.
 
+Fugu is a fish that has very toxic parts. Just a like a nice website where only one bad script can be toxic and kill you.
+
 Build FuguFugu:
 
 `go build`
