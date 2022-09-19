@@ -5,6 +5,7 @@ import (
 )
 
 type SitePrivacy struct {
+	Company     *Company
 	Url         *string
 	ImgCount    int
 	CssCount    int
@@ -13,7 +14,7 @@ type SitePrivacy struct {
 	Rank        int
 }
 
-func FromExternals(externals map[string]Privacy) map[string]SitePrivacy {
+func FromExternals(companies map[string]Company, externals map[string]Privacy) map[string]SitePrivacy {
 	sites := make(map[string]SitePrivacy)
 
 	for urlString, p := range externals {
@@ -22,9 +23,11 @@ func FromExternals(externals map[string]Privacy) map[string]SitePrivacy {
 			panic(err)
 		}
 		if _, ok := sites[u.Host]; !ok {
+			company := CompanyForUrl(companies, u.Host)
 			sP := SitePrivacy{
-				Url:    &u.Host,
-				Cookie: p.Cookie,
+				Company: company,
+				Url:     &u.Host,
+				Cookie:  p.Cookie,
 			}
 			if p.Typ == "Script" {
 				sP.ScriptCount += 1

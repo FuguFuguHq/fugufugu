@@ -14,7 +14,11 @@ import (
 	"strings"
 )
 
+var Companies map[string]fugu.Company
+
 func main() {
+	Companies = fugu.Companies()
+
 	var checkUrl string
 	flag.StringVar(&checkUrl, "url", "", "url to check")
 	flag.Parse()
@@ -108,7 +112,7 @@ func main() {
 
 	c.Visit(checkUrl)
 
-	privacies := fugu.FromExternals(externals)
+	privacies := fugu.FromExternals(Companies, externals)
 
 	v := make([]fugu.SitePrivacy, 0, len(privacies))
 
@@ -123,7 +127,7 @@ func main() {
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Site", "Script", "Image", "Css", "Cookie"})
+	t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css", "Cookie"})
 
 	scripts := 0
 	images := 0
@@ -133,6 +137,12 @@ func main() {
 		scripts += p.ScriptCount
 		images += p.ImgCount
 		css += p.CssCount
+		country := ""
+		company := ""
+		if p.Company != nil {
+			country = p.Company.Country
+			company = p.Company.Name
+		}
 		c, s, i, css := "", "", "", ""
 		if p.Cookie {
 			c = "Yes"
@@ -147,7 +157,7 @@ func main() {
 			i = "Yes"
 		}
 		t.AppendRows([]table.Row{
-			{*p.Url, s, i, css, c},
+			{*p.Url, company, country, s, i, css, c},
 		})
 	}
 
