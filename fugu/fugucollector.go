@@ -1,6 +1,7 @@
 package fugu
 
 import (
+	"fmt"
 	"github.com/gocolly/colly/v2"
 	"io"
 	"log"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collector {
+func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) *colly.Collector {
 
 	checkedInternalCss := make(map[string]bool)
 
@@ -21,13 +22,18 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 
 	c := colly.NewCollector(
 		colly.AllowedDomains(u.Hostname()),
+		colly.UserAgent("FuguFugu"),
 		colly.MaxDepth(1),
 	)
 
 	c.OnRequest(func(r *colly.Request) {
+		if verbose {
+			fmt.Println("Checking " + r.URL.String())
+		}
 	})
 
 	c.OnResponse(func(r *colly.Response) {
+
 		//	fmt.Printf("Link found: %v\n", r.Headers)
 	})
 
@@ -45,7 +51,13 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 		link := e.Attr("src")
 		if _, ok := externals[link]; !ok {
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-				resp, err := http.Get(link)
+				client := http.Client{
+					Timeout: 5 * time.Second,
+				}
+				resp, err := client.Get(link)
+				if verbose {
+					fmt.Println("Downloading " + link)
+				}
 				if err != nil {
 					log.Println(err)
 				} else {
@@ -66,6 +78,9 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 					Timeout: 5 * time.Second,
 				}
 				resp, err := client.Get(link)
+				if verbose {
+					fmt.Println("Downloading " + link)
+				}
 				if err != nil {
 					log.Println(err)
 				} else {
@@ -95,6 +110,9 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 						Timeout: 5 * time.Second,
 					}
 					hasCookie := false
+					if verbose {
+						fmt.Println("Downloading " + cssLink)
+					}
 					resp, err := client.Get(cssLink)
 					if err != nil {
 						log.Println(err)

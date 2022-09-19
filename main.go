@@ -15,7 +15,9 @@ func main() {
 	Companies = fugu.Companies()
 
 	var checkUrl string
+	var verbose bool
 	flag.StringVar(&checkUrl, "url", "", "url to check")
+	flag.BoolVar(&verbose, "verbose", false, "verbose mode")
 	flag.Parse()
 
 	if len(checkUrl) == 0 {
@@ -24,7 +26,7 @@ func main() {
 	}
 
 	externals := make(map[string]fugu.Privacy)
-	c := fugu.NewCollector(checkUrl, externals)
+	c := fugu.NewCollector(checkUrl, externals, verbose)
 	c.Visit(checkUrl)
 
 	privacies := fugu.FromExternals(Companies, externals)
