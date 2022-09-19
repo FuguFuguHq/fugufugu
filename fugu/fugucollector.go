@@ -79,39 +79,41 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		rel := e.Attr("rel")
-		if len(rel) > 0 && rel == "stylesheet" {
-			cssLink := ""
-			if !strings.HasPrefix(link, "http") {
-				cssLink = checkUrl + "/" + link
-			} else {
-				cssLink = link
-			}
-			client := http.Client{
-				Timeout: 5 * time.Second,
-			}
-			resp, err := client.Get(cssLink)
-			if err != nil {
-				log.Println(err)
-			} else {
-				b, err := io.ReadAll(resp.Body)
+		if _, ok := externals[link]; !ok {
+			if len(rel) > 0 && rel == "stylesheet" {
+				cssLink := ""
+				if !strings.HasPrefix(link, "http") {
+					cssLink = checkUrl + "/" + link
+				} else {
+					cssLink = link
+				}
+				client := http.Client{
+					Timeout: 5 * time.Second,
+				}
+				resp, err := client.Get(cssLink)
 				if err != nil {
 					log.Println(err)
 				} else {
-					imports := ImportsFromCss(string(b))
-					for _, i := range imports {
-						externals[i] = Privacy{
-							Typ: "Css",
-							// @TODO check @import files for cookies
-							Cookie: false,
+					b, err := io.ReadAll(resp.Body)
+					if err != nil {
+						log.Println(err)
+					} else {
+						imports := ImportsFromCss(string(b))
+						for _, i := range imports {
+							externals[i] = Privacy{
+								Typ: "Css",
+								// @TODO check @import files for cookies
+								Cookie: false,
+							}
 						}
 					}
 				}
-			}
 
-			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-				externals[link] = Privacy{
-					Typ:    "Css",
-					Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+				if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
+					externals[link] = Privacy{
+						Typ:    "Css",
+						Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+					}
 				}
 			}
 		}
