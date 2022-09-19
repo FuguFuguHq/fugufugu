@@ -12,6 +12,8 @@ import (
 
 func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collector {
 
+	checkedInternalCss := make(map[string]bool)
+
 	u, err := url.Parse(checkUrl)
 	if err != nil {
 		panic(err)
@@ -87,32 +89,36 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 				} else {
 					cssLink = link
 				}
-				client := http.Client{
-					Timeout: 5 * time.Second,
-				}
-				resp, err := client.Get(cssLink)
-				if err != nil {
-					log.Println(err)
-				} else {
-					b, err := io.ReadAll(resp.Body)
+				if _, ok := checkedInternalCss[cssLink]; !ok {
+					checkedInternalCss[cssLink] = true
+					client := http.Client{
+						Timeout: 5 * time.Second,
+					}
+					hasCookie := false
+					resp, err := client.Get(cssLink)
 					if err != nil {
 						log.Println(err)
 					} else {
-						imports := ImportsFromCss(string(b))
-						for _, i := range imports {
-							externals[i] = Privacy{
-								Typ: "Css",
-								// @TODO check @import files for cookies
-								Cookie: false,
+						b, err := io.ReadAll(resp.Body)
+						if err != nil {
+							log.Println(err)
+						} else {
+							imports := ImportsFromCss(string(b))
+							for _, i := range imports {
+								externals[i] = Privacy{
+									Typ: "Css",
+									// @TODO check @import files for cookies
+									Cookie: false,
+								}
 							}
+							hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
 						}
 					}
-				}
-
-				if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-					externals[link] = Privacy{
-						Typ:    "Css",
-						Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+					if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
+						externals[link] = Privacy{
+							Typ:    "Css",
+							Cookie: hasCookie,
+						}
 					}
 				}
 			}
