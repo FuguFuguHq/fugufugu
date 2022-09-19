@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collector {
@@ -59,15 +60,18 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 		link := e.Attr("src")
 		if _, ok := externals[link]; !ok {
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-				resp, err := http.Get(link)
+				client := http.Client{
+					Timeout: 5 * time.Second,
+				}
+				resp, err := client.Get(link)
 				if err != nil {
-					log.Fatalln(err)
+					log.Println(err)
+				} else {
+					externals[link] = Privacy{
+						Typ:    "Script",
+						Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+					}
 				}
-				externals[link] = Privacy{
-					Typ:    "Script",
-					Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
-				}
-
 			}
 		}
 	})
@@ -82,20 +86,25 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 			} else {
 				cssLink = link
 			}
-			resp, err := http.Get(cssLink)
-			if err != nil {
-				log.Fatalln(err)
+			client := http.Client{
+				Timeout: 5 * time.Second,
 			}
-			b, err := io.ReadAll(resp.Body)
+			resp, err := client.Get(cssLink)
 			if err != nil {
-				log.Fatalln(err)
-			}
-			imports := ImportsFromCss(string(b))
-			for _, i := range imports {
-				externals[i] = Privacy{
-					Typ: "Css",
-					// @TODO check @import files for cookies
-					Cookie: false,
+				log.Println(err)
+			} else {
+				b, err := io.ReadAll(resp.Body)
+				if err != nil {
+					log.Println(err)
+				} else {
+					imports := ImportsFromCss(string(b))
+					for _, i := range imports {
+						externals[i] = Privacy{
+							Typ: "Css",
+							// @TODO check @import files for cookies
+							Cookie: false,
+						}
+					}
 				}
 			}
 
