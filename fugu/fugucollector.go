@@ -45,12 +45,12 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
 				resp, err := http.Get(link)
 				if err != nil {
-					log.Fatalln(err)
-				}
-
-				externals[link] = Privacy{
-					Typ:    "Image",
-					Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+					log.Println(err)
+				} else {
+					externals[link] = Privacy{
+						Typ:    "Image",
+						Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+					}
 				}
 			}
 		}
