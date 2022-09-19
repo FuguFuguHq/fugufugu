@@ -49,8 +49,20 @@ func Companies() map[string]Company {
 		{
 			Name:    "Google",
 			Country: "US",
-			Urls:    []string{"googleapis.com", "gstatic.com"},
+			Urls:    []string{"googleapis.com", "gstatic.com", "googletagmanager.com"},
 			Privacy: "",
+		},
+		{
+			Name:    "Squarespace",
+			Country: "US",
+			Urls:    []string{"squarespace.com"},
+			Privacy: "https://www.squarespace.com/privacy",
+		},
+		{
+			Name:    "Twitter",
+			Country: "US",
+			Urls:    []string{"twitter.com"},
+			Privacy: "https://twitter.com/en/privacy",
 		},
 		{
 			Name:    "Tilda",

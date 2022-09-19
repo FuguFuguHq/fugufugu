@@ -18,6 +18,7 @@ func NewCollector(checkUrl string, externals map[string]Privacy) *colly.Collecto
 
 	c := colly.NewCollector(
 		colly.AllowedDomains(u.Hostname()),
+		colly.MaxDepth(1),
 	)
 
 	c.OnRequest(func(r *colly.Request) {
