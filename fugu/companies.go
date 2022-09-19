@@ -35,6 +35,12 @@ func CompanyForUrl(companies map[string]Company, u string) *Company {
 func Companies() map[string]Company {
 	raw := []Company{
 		{
+			Name:    "sendinblue",
+			Country: "EU",
+			Urls:    []string{"sibforms.com"},
+			Privacy: "https://www.sendinblue.com/legal/privacypolicy/",
+		},
+		{
 			Name:    "Simple Analytics",
 			Country: "EU",
 			Urls:    []string{"simpleanalyticscdn.com"},

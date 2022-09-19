@@ -40,42 +40,45 @@ func main() {
 		return v[i].Rank > v[j].Rank
 	})
 
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css", "Cookie"})
+	if len(v) == 0 {
+		fmt.Println("Cool, no external resources found!")
+	} else {
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css", "Cookie"})
 
-	scripts := 0
-	images := 0
-	css := 0
+		scripts := 0
+		images := 0
+		css := 0
 
-	for _, p := range v {
-		scripts += p.ScriptCount
-		images += p.ImgCount
-		css += p.CssCount
-		country := ""
-		company := ""
-		if p.Company != nil {
-			country = p.Company.Country
-			company = p.Company.Name
+		for _, p := range v {
+			scripts += p.ScriptCount
+			images += p.ImgCount
+			css += p.CssCount
+			country := ""
+			company := ""
+			if p.Company != nil {
+				country = p.Company.Country
+				company = p.Company.Name
+			}
+			c, s, i, css := "", "", "", ""
+			if p.Cookie {
+				c = "Yes"
+			}
+			if p.CssCount > 0 {
+				css = "Yes"
+			}
+			if p.ScriptCount > 0 {
+				s = "Yes"
+			}
+			if p.ImgCount > 0 {
+				i = "Yes"
+			}
+			t.AppendRows([]table.Row{
+				{*p.Url, company, country, s, i, css, c},
+			})
 		}
-		c, s, i, css := "", "", "", ""
-		if p.Cookie {
-			c = "Yes"
-		}
-		if p.CssCount > 0 {
-			css = "Yes"
-		}
-		if p.ScriptCount > 0 {
-			s = "Yes"
-		}
-		if p.ImgCount > 0 {
-			i = "Yes"
-		}
-		t.AppendRows([]table.Row{
-			{*p.Url, company, country, s, i, css, c},
-		})
+		fmt.Printf("Summary %s: %d scripts | %d images | %d css\n", checkUrl, scripts, images, css)
+		t.Render()
 	}
-
-	fmt.Printf("Summary %s: %d scripts | %d images | %d css\n", checkUrl, scripts, images, css)
-	t.Render()
 }
