@@ -1,7 +1,8 @@
 package fugu
 
 import (
-	"golang.org/x/net/publicsuffix"
+	"log"
+	"net/url"
 	"strings"
 )
 
@@ -12,19 +13,22 @@ type Company struct {
 	Privacy string
 }
 
-func CompanyForUrl(companies map[string]Company, url string) *Company {
+func CompanyForUrl(companies map[string]Company, u string) *Company {
 	var company Company
 
-	// publicsuffix doesn't work for "d3e54v103j8qbb.cloudfront.net" ?
-	if strings.HasSuffix(url, "cloudfront.net") {
-		domain := "cloudfront.net"
-		company = companies[domain]
-	} else {
-		domain, err := publicsuffix.EffectiveTLDPlusOne(url)
-		if err == nil {
-			company = companies[domain]
-		}
+	host, err := url.Parse("https://" + u)
+	if err != nil {
+		log.Fatalln(err)
 	}
+	// used publixprefix but it's a mess so
+	// we create another mess :-)
+	// will not work for e.g. co.uk
+	parts := strings.Split(host.Hostname(), ".")
+	if len(parts) < 2 {
+		return nil
+	}
+	domain := parts[len(parts)-2] + "." + parts[len(parts)-1]
+	company = companies[domain]
 	return &company
 }
 
