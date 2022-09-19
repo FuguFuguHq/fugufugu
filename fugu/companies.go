@@ -35,6 +35,18 @@ func CompanyForUrl(companies map[string]Company, u string) *Company {
 func Companies() map[string]Company {
 	raw := []Company{
 		{
+			Name:    "Stripe",
+			Country: "US",
+			Urls:    []string{"stripe.com"},
+			Privacy: "https://stripe.com/de/privacy",
+		},
+		{
+			Name:    "Mailchimp",
+			Country: "US",
+			Urls:    []string{"stripe.com"},
+			Privacy: "https://mailchimp.com/en/legal/",
+		},
+		{
 			Name:    "sendinblue",
 			Country: "EU",
 			Urls:    []string{"sibforms.com"},
@@ -55,7 +67,7 @@ func Companies() map[string]Company {
 		{
 			Name:    "Google",
 			Country: "US",
-			Urls:    []string{"googleapis.com", "gstatic.com", "googletagmanager.com"},
+			Urls:    []string{"google.com", "googleapis.com", "gstatic.com", "googletagmanager.com"},
 			Privacy: "",
 		},
 		{

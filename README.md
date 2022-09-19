@@ -9,11 +9,15 @@ Each external script can undermine the security of your user.
 
 Fugu is a fish that has some very toxic parts. Just like a nice website where only one bad script can be toxic and kill you.
 
+## Build
+
 Build FuguFugu:
 
 `go build`
 
 should create a `fugufugu` executable.
+
+## Run 
 
 To check [https://www.amazingcto.com](https://www.amazingcto.com) (my site ;-) for external scripts:
 
