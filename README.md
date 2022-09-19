@@ -15,6 +15,8 @@ Build FuguFugu:
 
 should create a `fugufugu` executable.
 
+To check [https://www.amazingcto.com](https://www.amazingcto.com) (my site ;-) for external scripts:
+
 `./fugufugu -url https://www.amazingcto.com`
 
 prints a report of all external scripts and images it found.
