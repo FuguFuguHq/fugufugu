@@ -1,7 +1,6 @@
 package fugu
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"regexp"
 )
 
@@ -11,7 +10,6 @@ func ImportsFromCss(css string) []string {
 
 	regex := regexp.MustCompile("@import[ ]+url\\('(.*)'\\)")
 	res := regex.FindAllStringSubmatch(css, -1)
-	spew.Dump(css)
 	for i := range res {
 		imports = append(imports, res[i][1])
 	}
