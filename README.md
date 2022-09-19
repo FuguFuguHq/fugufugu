@@ -19,4 +19,15 @@ should create a `fugufugu` executable.
 
 prints a report of all external scripts and images it found.
 
+```
+Summary https://www.amazingcto.com: 2 scripts | 1 images    
++--------------------------------+--------+-------+--------+
+| SITE                           | SCRIPT | IMAGE | COOKIE |
++--------------------------------+--------+-------+--------+
+| scripts.simpleanalyticscdn.com | Yes    |       |        |
+| t5972a59c.emailsys1a.net       | Yes    |       |        |
+| datenschutz-generator.de       |        | Yes   |        |
++--------------------------------+--------+-------+--------+
+```
+
 **Only use on your own website!**
