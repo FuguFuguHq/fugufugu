@@ -87,14 +87,17 @@ func main() {
 
 	c.OnHTML("link[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-			resp, err := http.Get(link)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			externals[link] = fugu.Privacy{
-				Typ:    "Link",
-				Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+		rel := e.Attr("rel")
+		if len(rel) > 0 {
+			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
+				resp, err := http.Get(link)
+				if err != nil {
+					log.Fatalln(err)
+				}
+				externals[link] = fugu.Privacy{
+					Typ:    "Css",
+					Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+				}
 			}
 		}
 	})
@@ -120,17 +123,22 @@ func main() {
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Site", "Script", "Image", "Cookie"})
+	t.AppendHeader(table.Row{"Site", "Script", "Image", "Css", "Cookie"})
 
 	scripts := 0
 	images := 0
+	css := 0
 
 	for _, p := range v {
 		scripts += p.ScriptCount
 		images += p.ImgCount
-		c, s, i := "", "", ""
+		css += p.CssCount
+		c, s, i, css := "", "", "", ""
 		if p.Cookie {
 			c = "Yes"
+		}
+		if p.CssCount > 0 {
+			css = "Yes"
 		}
 		if p.ScriptCount > 0 {
 			s = "Yes"
@@ -139,10 +147,10 @@ func main() {
 			i = "Yes"
 		}
 		t.AppendRows([]table.Row{
-			{*p.Url, s, i, c},
+			{*p.Url, s, i, css, c},
 		})
 	}
 
-	fmt.Printf("Summary %s: %d scripts | %d images\n", checkUrl, scripts, images)
+	fmt.Printf("Summary %s: %d scripts | %d images | %d css\n", checkUrl, scripts, images, css)
 	t.Render()
 }

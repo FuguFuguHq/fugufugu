@@ -30,6 +30,8 @@ func FromExternals(externals map[string]Privacy) map[string]SitePrivacy {
 				sP.ScriptCount += 1
 			} else if p.Typ == "Image" {
 				sP.ImgCount += 1
+			} else if p.Typ == "Css" {
+				sP.CssCount += 1
 			}
 			sites[u.Host] = sP
 		} else {
@@ -39,6 +41,8 @@ func FromExternals(externals map[string]Privacy) map[string]SitePrivacy {
 				sP.ScriptCount += 1
 			} else if p.Typ == "Image" {
 				sP.ImgCount += 1
+			} else if p.Typ == "Css" {
+				sP.CssCount += 1
 			}
 			sites[u.Host] = sP
 		}
