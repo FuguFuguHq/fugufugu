@@ -25,13 +25,6 @@ To check [https://www.amazingcto.com](https://www.amazingcto.com) (my site ;-) f
 
 prints a report of all external scripts and images it found.
 
-## Verbose
-
-Verbose mode
-
-`./fugufugu -url https://www.amazingcto.com -verbose`
-
-will print what fugufugu is currently doing.
 
 ```
 +--------------------------------+------------------+---------+--------+-------+-----+--------+
@@ -39,8 +32,15 @@ will print what fugufugu is currently doing.
 +--------------------------------+------------------+---------+--------+-------+-----+--------+
 | t5972a59c.emailsys1a.net       | rapidmail        | EU      | Yes    |       |     |        |
 | scripts.simpleanalyticscdn.com | Simple Analytics | EU      | Yes    |       |     |        |
-| datenschutz-generator.de       |                  |         |        | Yes   |     |        |
 +--------------------------------+------------------+---------+--------+-------+-----+--------+
 ```
+
+## Verbose
+
+Verbose mode
+
+`./fugufugu -url https://www.amazingcto.com -verbose`
+
+will print what fugufugu is currently doing.
 
 **Only use on your own website!**
