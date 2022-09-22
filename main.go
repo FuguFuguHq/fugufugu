@@ -26,8 +26,9 @@ func main() {
 	}
 
 	externals := make(map[string]fugu.Privacy)
-	c := fugu.NewCollector(checkUrl, externals, verbose)
-	c.Visit(checkUrl)
+	scanner := fugu.NewCollector(checkUrl, externals, verbose)
+
+	scanner.Collector.Visit(checkUrl)
 
 	privacies := fugu.FromExternals(Companies, externals)
 

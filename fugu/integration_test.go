@@ -46,8 +46,8 @@ func TestCollectorVisit(t *testing.T) {
 
 	externals := make(map[string]Privacy)
 
-	c := NewCollector(ts.URL, externals, false)
-	err := c.Visit(ts.URL)
+	scanner := NewCollector(ts.URL, externals, false)
+	err := scanner.Collector.Visit(ts.URL)
 	if err != nil {
 		panic(err)
 	}

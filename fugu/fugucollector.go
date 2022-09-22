@@ -8,10 +8,17 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
-func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) *colly.Collector {
+type Scanner struct {
+	Collector *colly.Collector
+}
+
+func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) Scanner {
+
+	var pages uint64
 
 	checkedInternalCss := make(map[string]bool)
 
@@ -26,6 +33,10 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) *
 		colly.MaxDepth(1),
 	)
 
+	scanner := Scanner{
+		Collector: c,
+	}
+
 	c.OnRequest(func(r *colly.Request) {
 		if verbose {
 			fmt.Println("Checking " + r.URL.String())
@@ -33,7 +44,7 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) *
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-
+		atomic.AddUint64(&pages, 1)
 		//	fmt.Printf("Link found: %v\n", r.Headers)
 	})
 
@@ -147,5 +158,5 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) *
 	c.OnRequest(func(r *colly.Request) {
 	})
 
-	return c
+	return scanner
 }
