@@ -51,7 +51,7 @@ FuguFugu will not check for cookies in resources by default to speed up checking
 
 ## Max Pages
 
-FuguFugu will by default check 10.000 pages. `-max` can sets a new maximum for pages.
+FuguFugu will by default check 10.000 pages. `-max` sets a new maximum for pages.
 
 This checks only 10 pages:
 
