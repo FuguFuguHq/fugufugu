@@ -46,12 +46,13 @@ func TestCollectorVisit(t *testing.T) {
 
 	externals := make(map[string]Privacy)
 
-	scanner := NewCollector(ts.URL, externals, false)
+	scanner := NewCollector(10, true, ts.URL, externals, false)
 	err := scanner.Collector.Visit(ts.URL)
 	if err != nil {
 		panic(err)
 	}
 
+	assert.Equal(t, uint64(1), *scanner.Pages)
 	assert.Equal(t, 2, len(externals))
 	assert.Equal(t, "Image", externals["https://www.amazingcto.com/AmazingCTO_Logo_White.svg"].Typ)
 	assert.Equal(t, "Css", externals["https://fonts.googleapis.com/css?family=Muli"].Typ)

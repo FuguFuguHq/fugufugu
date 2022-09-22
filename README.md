@@ -41,6 +41,23 @@ Verbose mode
 
 `./fugufugu -url https://www.amazingcto.com -verbose`
 
+## Cookies
+
+FuguFugu will not check for cookies in resources by default to speed up checking.
+
+`-cookie` will enable cookie checking
+
+`./fugufugu -url https://www.amazingcto.com -cookie`
+
+## Max Pages
+
+FuguFugu will by default check 10.000 pages. `-max` can sets a new maximum for pages.
+
+This checks only 10 pages:
+
+`./fugufugu -url https://www.amazingcto.com -max 10`
+
+
 will print what fugufugu is currently doing.
 
 **Only use on your own website!**

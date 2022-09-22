@@ -16,8 +16,12 @@ func main() {
 
 	var checkUrl string
 	var verbose bool
+	var checkForCookie bool
+	var maxPages uint64
 	flag.StringVar(&checkUrl, "url", "", "url to check")
+	flag.Uint64Var(&maxPages, "max", 10000, "max pages to check")
 	flag.BoolVar(&verbose, "verbose", false, "verbose mode")
+	flag.BoolVar(&checkForCookie, "cookie", false, "check for cookies")
 	flag.Parse()
 
 	if len(checkUrl) == 0 {
@@ -26,7 +30,7 @@ func main() {
 	}
 
 	externals := make(map[string]fugu.Privacy)
-	scanner := fugu.NewCollector(checkUrl, externals, verbose)
+	scanner := fugu.NewCollector(maxPages, checkForCookie, checkUrl, externals, verbose)
 
 	scanner.Collector.Visit(checkUrl)
 
@@ -48,7 +52,11 @@ func main() {
 	} else {
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
-		t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css", "Cookie"})
+		if checkForCookie {
+			t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css", "Cookie"})
+		} else {
+			t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css"})
+		}
 
 		scripts := 0
 		images := 0
@@ -77,11 +85,17 @@ func main() {
 			if p.ImgCount > 0 {
 				i = "Yes"
 			}
-			t.AppendRows([]table.Row{
-				{*p.Url, company, country, s, i, css, c},
-			})
+			if checkForCookie {
+				t.AppendRows([]table.Row{
+					{*p.Url, company, country, s, i, css, c},
+				})
+			} else {
+				t.AppendRows([]table.Row{
+					{*p.Url, company, country, s, i, css},
+				})
+			}
 		}
-		fmt.Printf("Summary %s: %d scripts | %d images | %d css\n", checkUrl, scripts, images, css)
+		fmt.Printf("Summary %s: %d pages | %d scripts | %d images | %d css\n", checkUrl, *scanner.Pages, scripts, images, css)
 		t.Render()
 	}
 }

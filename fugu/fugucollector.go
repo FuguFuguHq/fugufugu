@@ -14,11 +14,10 @@ import (
 
 type Scanner struct {
 	Collector *colly.Collector
+	Pages     *uint64
 }
 
-func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) Scanner {
-
-	var pages uint64
+func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externals map[string]Privacy, verbose bool) Scanner {
 
 	checkedInternalCss := make(map[string]bool)
 
@@ -35,6 +34,7 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) S
 
 	scanner := Scanner{
 		Collector: c,
+		Pages:     new(uint64),
 	}
 
 	c.OnRequest(func(r *colly.Request) {
@@ -44,7 +44,7 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) S
 	})
 
 	c.OnResponse(func(r *colly.Response) {
-		atomic.AddUint64(&pages, 1)
+		atomic.AddUint64(scanner.Pages, 1)
 		//	fmt.Printf("Link found: %v\n", r.Headers)
 	})
 
@@ -55,26 +55,32 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) S
 		// fmt.Printf("Link found: %q -> %s\n", e.Text, link)
 		// Visit link found on page
 		// Only those links are visited which are in AllowedDomains
-		c.Visit(e.Request.AbsoluteURL(link))
+		if *scanner.Pages < maxPages {
+			c.Visit(e.Request.AbsoluteURL(link))
+		}
 	})
 
 	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
 		link := e.Attr("src")
 		if _, ok := externals[link]; !ok {
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-				client := http.Client{
-					Timeout: 5 * time.Second,
-				}
-				resp, err := client.Get(link)
-				if verbose {
-					fmt.Println("Downloading " + link)
-				}
-				if err != nil {
-					log.Println(err)
-				} else {
+				hasCookie := false
+				if checkForCookie {
+					client := http.Client{
+						Timeout: 5 * time.Second,
+					}
+					resp, err := client.Get(link)
+					if verbose {
+						fmt.Println("Downloading " + link)
+					}
+					if err != nil {
+						log.Println(err)
+					} else {
+						hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
+					}
 					externals[link] = Privacy{
 						Typ:    "Image",
-						Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+						Cookie: hasCookie,
 					}
 				}
 			}
@@ -85,19 +91,28 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) S
 		link := e.Attr("src")
 		if _, ok := externals[link]; !ok {
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-				client := http.Client{
-					Timeout: 5 * time.Second,
-				}
-				resp, err := client.Get(link)
-				if verbose {
-					fmt.Println("Downloading " + link)
-				}
-				if err != nil {
-					log.Println(err)
+				hasCookie := false
+				if checkForCookie {
+					client := http.Client{
+						Timeout: 5 * time.Second,
+					}
+					resp, err := client.Get(link)
+					if verbose {
+						fmt.Println("Downloading " + link)
+					}
+					if err != nil {
+						log.Println(err)
+					} else {
+						hasCookie := len(resp.Header.Get("Set-Cookie")) > 0
+						externals[link] = Privacy{
+							Typ:    "Script",
+							Cookie: hasCookie,
+						}
+					}
 				} else {
 					externals[link] = Privacy{
 						Typ:    "Script",
-						Cookie: len(resp.Header.Get("Set-Cookie")) > 0,
+						Cookie: hasCookie,
 					}
 				}
 			}
@@ -109,38 +124,40 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) S
 		rel := e.Attr("rel")
 		if _, ok := externals[link]; !ok {
 			if len(rel) > 0 && rel == "stylesheet" {
-				cssLink := ""
-				if !strings.HasPrefix(link, "http") {
-					cssLink = checkUrl + "/" + link
-				} else {
-					cssLink = link
-				}
-				if _, ok := checkedInternalCss[cssLink]; !ok {
-					checkedInternalCss[cssLink] = true
-					client := http.Client{
-						Timeout: 5 * time.Second,
-					}
-					hasCookie := false
-					if verbose {
-						fmt.Println("Downloading " + cssLink)
-					}
-					resp, err := client.Get(cssLink)
-					if err != nil {
-						log.Println(err)
+				hasCookie := false
+				if checkForCookie {
+					cssLink := ""
+					if !strings.HasPrefix(link, "http") {
+						cssLink = checkUrl + "/" + link
 					} else {
-						b, err := io.ReadAll(resp.Body)
+						cssLink = link
+					}
+					if _, ok := checkedInternalCss[cssLink]; !ok {
+						checkedInternalCss[cssLink] = true
+						client := http.Client{
+							Timeout: 5 * time.Second,
+						}
+						if verbose {
+							fmt.Println("Downloading " + cssLink)
+						}
+						resp, err := client.Get(cssLink)
 						if err != nil {
 							log.Println(err)
 						} else {
-							imports := ImportsFromCss(string(b))
-							for _, i := range imports {
-								externals[i] = Privacy{
-									Typ: "Css",
-									// @TODO check @import files for cookies
-									Cookie: false,
+							b, err := io.ReadAll(resp.Body)
+							if err != nil {
+								log.Println(err)
+							} else {
+								imports := ImportsFromCss(string(b))
+								for _, i := range imports {
+									externals[i] = Privacy{
+										Typ: "Css",
+										// @TODO check @import files for cookies
+										Cookie: false,
+									}
 								}
+								hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
 							}
-							hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
 						}
 					}
 					if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
@@ -149,6 +166,7 @@ func NewCollector(checkUrl string, externals map[string]Privacy, verbose bool) S
 							Cookie: hasCookie,
 						}
 					}
+
 				}
 			}
 		}
