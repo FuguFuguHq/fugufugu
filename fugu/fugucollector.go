@@ -116,49 +116,47 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 		if _, ok := externals[link]; !ok {
 			if len(rel) > 0 && rel == "stylesheet" {
 				hasCookie := false
-				if checkForCookie {
-					cssLink := ""
-					if !strings.HasPrefix(link, "http") {
-						cssLink = checkUrl + "/" + link
-					} else {
-						cssLink = link
+				cssLink := ""
+				if !strings.HasPrefix(link, "http") {
+					cssLink = checkUrl + "/" + link
+				} else {
+					cssLink = link
+				}
+				if _, ok := checkedInternalCss[cssLink]; !ok {
+					checkedInternalCss[cssLink] = true
+					client := http.Client{
+						Timeout: 5 * time.Second,
 					}
-					if _, ok := checkedInternalCss[cssLink]; !ok {
-						checkedInternalCss[cssLink] = true
-						client := http.Client{
-							Timeout: 5 * time.Second,
-						}
-						if verbose {
-							fmt.Println("Downloading " + cssLink)
-						}
-						resp, err := client.Get(cssLink)
+					if verbose {
+						fmt.Println("Downloading " + cssLink)
+					}
+					resp, err := client.Get(cssLink)
+					if err != nil {
+						log.Println(err)
+					} else {
+						b, err := io.ReadAll(resp.Body)
 						if err != nil {
 							log.Println(err)
 						} else {
-							b, err := io.ReadAll(resp.Body)
-							if err != nil {
-								log.Println(err)
-							} else {
-								imports := ImportsFromCss(string(b))
-								for _, i := range imports {
-									externals[i] = Privacy{
-										Typ: "Css",
-										// @TODO check @import files for cookies
-										Cookie: false,
-									}
+							imports := ImportsFromCss(string(b))
+							for _, i := range imports {
+								externals[i] = Privacy{
+									Typ: "Css",
+									// @TODO check @import files for cookies
+									Cookie: false,
 								}
-								hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
 							}
+							hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
 						}
 					}
-					if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
-						externals[link] = Privacy{
-							Typ:    "Css",
-							Cookie: hasCookie,
-						}
-					}
-
 				}
+				if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
+					externals[link] = Privacy{
+						Typ:    "Css",
+						Cookie: hasCookie,
+					}
+				}
+
 			}
 		}
 	})
