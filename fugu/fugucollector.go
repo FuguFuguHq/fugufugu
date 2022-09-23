@@ -17,6 +17,23 @@ type Scanner struct {
 	Pages     *uint64
 }
 
+func CheckCookie(checkUrl string, verbose bool) bool {
+	hasCookie := false
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	resp, err := client.Get(checkUrl)
+	if verbose {
+		fmt.Println("Downloading " + checkUrl)
+	}
+	if err != nil {
+		log.Println(err)
+	} else {
+		hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
+	}
+	return hasCookie
+}
+
 func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externals map[string]Privacy, verbose bool) Scanner {
 
 	checkedInternalCss := make(map[string]bool)
@@ -66,22 +83,11 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
 				hasCookie := false
 				if checkForCookie {
-					client := http.Client{
-						Timeout: 5 * time.Second,
-					}
-					resp, err := client.Get(link)
-					if verbose {
-						fmt.Println("Downloading " + link)
-					}
-					if err != nil {
-						log.Println(err)
-					} else {
-						hasCookie = len(resp.Header.Get("Set-Cookie")) > 0
-					}
-					externals[link] = Privacy{
-						Typ:    "Image",
-						Cookie: hasCookie,
-					}
+					hasCookie = CheckCookie(checkUrl, verbose)
+				}
+				externals[link] = Privacy{
+					Typ:    "Image",
+					Cookie: hasCookie,
 				}
 			}
 		}
@@ -93,22 +99,7 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 			if !strings.HasPrefix(link, checkUrl) && strings.HasPrefix(link, "https://") {
 				hasCookie := false
 				if checkForCookie {
-					client := http.Client{
-						Timeout: 5 * time.Second,
-					}
-					resp, err := client.Get(link)
-					if verbose {
-						fmt.Println("Downloading " + link)
-					}
-					if err != nil {
-						log.Println(err)
-					} else {
-						hasCookie := len(resp.Header.Get("Set-Cookie")) > 0
-						externals[link] = Privacy{
-							Typ:    "Script",
-							Cookie: hasCookie,
-						}
-					}
+					hasCookie = CheckCookie(checkUrl, verbose)
 				} else {
 					externals[link] = Privacy{
 						Typ:    "Script",
