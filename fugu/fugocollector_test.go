@@ -6,6 +6,8 @@ import (
 )
 
 func TestForPrivacyPage(t *testing.T) {
-	url := "/what/privacy/ever/"
-	assert.True(t, isPrivacyPage(url, "Whatever"))
+	url1 := "/what/privacy/ever/"
+	assert.True(t, isPrivacyPage(url1, "Whatever"))
+	url2 := "/what/ever/"
+	assert.True(t, isPrivacyPage(url2, "Datenschutz"))
 }

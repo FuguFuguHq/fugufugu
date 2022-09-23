@@ -42,7 +42,8 @@ func CheckCookie(checkUrl string, verbose bool) bool {
 
 func isPrivacyPage(url string, title string) bool {
 	toLowerUrl := strings.ToLower(url)
-	return strings.Contains(toLowerUrl, "privacy")
+	toLowerTitle := strings.ToLower(title)
+	return strings.Contains(toLowerUrl, "privacy") || strings.Contains(toLowerTitle, "datenschutz")
 }
 
 func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externals map[string]Privacy, verbose bool) Scanner {
