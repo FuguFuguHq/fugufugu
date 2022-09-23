@@ -46,7 +46,7 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 	c := colly.NewCollector(
 		colly.AllowedDomains(u.Hostname()),
 		colly.UserAgent("FuguFugu"),
-		colly.MaxDepth(1),
+		colly.MaxDepth(5),
 	)
 
 	scanner := Scanner{
