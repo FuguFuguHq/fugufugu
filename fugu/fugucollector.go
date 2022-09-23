@@ -2,6 +2,7 @@ package fugu
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gocolly/colly/v2"
 	"io"
 	"log"
@@ -13,8 +14,14 @@ import (
 )
 
 type Scanner struct {
-	Collector *colly.Collector
-	Pages     *uint64
+	Collector    *colly.Collector
+	Pages        *uint64
+	PrivacyPages *[]PrivacyPage
+}
+
+type PrivacyPage struct {
+	URL   *string
+	Title *string
 }
 
 func CheckCookie(checkUrl string, verbose bool) bool {
@@ -50,15 +57,23 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 	)
 
 	scanner := Scanner{
-		Collector: c,
-		Pages:     new(uint64),
+		Collector:    c,
+		Pages:        new(uint64),
+		PrivacyPages: &[]PrivacyPage{},
 	}
 
-	c.OnRequest(func(r *colly.Request) {
-		toLowerUrl := strings.ToLower(r.URL.Path)
-		if strings.Contains(toLowerUrl, "privacy") {
-			// privacy page found
+	privacyPages := make(chan PrivacyPage, 5)
+	go func() {
+		for {
+			page, more := <-privacyPages
+			if more {
+				*scanner.PrivacyPages = append(*scanner.PrivacyPages, page)
+				spew.Dump(scanner.PrivacyPages)
+			}
 		}
+	}()
+
+	c.OnRequest(func(r *colly.Request) {
 		if verbose {
 			fmt.Println("Checking " + r.URL.String())
 		}
@@ -67,6 +82,16 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 	c.OnResponse(func(r *colly.Response) {
 		atomic.AddUint64(scanner.Pages, 1)
 		//	fmt.Printf("Link found: %v\n", r.Headers)
+	})
+
+	c.OnHTML("title", func(e *colly.HTMLElement) {
+		toLowerUrl := strings.ToLower(e.Request.URL.Path)
+		if strings.Contains(toLowerUrl, "privacy") {
+			privacyPages <- PrivacyPage{
+				URL:   &e.Request.URL.Path,
+				Title: &e.Text,
+			}
+		}
 	})
 
 	// On every a element which has href attribute call callback

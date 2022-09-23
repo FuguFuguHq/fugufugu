@@ -48,6 +48,7 @@ func main() {
 	})
 
 	if len(v) == 0 {
+		fmt.Printf("Summary %s: %d pages\n", checkUrl, *scanner.Pages)
 		fmt.Println("Cool, no external resources found!")
 	} else {
 		t := table.NewWriter()
@@ -95,7 +96,19 @@ func main() {
 				})
 			}
 		}
-		fmt.Printf("Summary %s: %d pages | %d scripts | %d images | %d css\n", checkUrl, *scanner.Pages, scripts, images, css)
+		if len(*scanner.PrivacyPages) > 0 {
+			p := table.NewWriter()
+			p.SetOutputMirror(os.Stdout)
+			p.AppendHeader(table.Row{"Privacy Page", "Title"})
+			for _, page := range *scanner.PrivacyPages {
+				p.AppendRows([]table.Row{
+					{*page.URL, *page.Title},
+				})
+			}
+			p.Render()
+		}
+
 		t.Render()
+		fmt.Printf("Summary %s: %d pages | %d scripts | %d images | %d css\n", checkUrl, *scanner.Pages, scripts, images, css)
 	}
 }
