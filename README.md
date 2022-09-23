@@ -23,16 +23,21 @@ To check [https://www.amazingcto.com](https://www.amazingcto.com) (my site ;-) f
 
 `./fugufugu -url https://www.amazingcto.com`
 
-prints a report of all external scripts and images it found.
-
+prints a report of privacy pages and all external scripts and images it found.
 
 ```
-+--------------------------------+------------------+---------+--------+-------+-----+--------+
-| SITE                           | COMPANY          | COUNTRY | SCRIPT | IMAGE | CSS | COOKIE |
-+--------------------------------+------------------+---------+--------+-------+-----+--------+
-| t5972a59c.emailsys1a.net       | rapidmail        | EU      | Yes    |       |     |        |
-| scripts.simpleanalyticscdn.com | Simple Analytics | EU      | Yes    |       |     |        |
-+--------------------------------+------------------+---------+--------+-------+-----+--------+
++--------------+----------------------+
+| PRIVACY PAGE | TITLE                |
++--------------+----------------------+
+| /privacy/    | Datenschutzerklärung |
++--------------+----------------------+
++--------------------------------+------------------+---------+--------+-------+-----+
+| SITE                           | COMPANY          | COUNTRY | SCRIPT | IMAGE | CSS |
++--------------------------------+------------------+---------+--------+-------+-----+
+| scripts.simpleanalyticscdn.com | Simple Analytics | EU      | Yes    |       |     |
+| t5972a59c.emailsys1a.net       | rapidmail        | EU      | Yes    |       |     |
++--------------------------------+------------------+---------+--------+-------+-----+
+Summary https://www.amazingcto.com: 38 pages | 2 scripts | 1 images | 0 css
 ```
 
 ## Verbose
