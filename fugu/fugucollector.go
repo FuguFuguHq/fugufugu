@@ -2,7 +2,6 @@ package fugu
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gocolly/colly/v2"
 	"io"
 	"log"
@@ -41,6 +40,11 @@ func CheckCookie(checkUrl string, verbose bool) bool {
 	return hasCookie
 }
 
+func isPrivacyPage(url string, title string) bool {
+	toLowerUrl := strings.ToLower(url)
+	return strings.Contains(toLowerUrl, "privacy")
+}
+
 func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externals map[string]Privacy, verbose bool) Scanner {
 
 	checkedInternalCss := make(map[string]bool)
@@ -68,7 +72,6 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 			page, more := <-privacyPages
 			if more {
 				*scanner.PrivacyPages = append(*scanner.PrivacyPages, page)
-				spew.Dump(scanner.PrivacyPages)
 			}
 		}
 	}()
@@ -85,8 +88,7 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 	})
 
 	c.OnHTML("title", func(e *colly.HTMLElement) {
-		toLowerUrl := strings.ToLower(e.Request.URL.Path)
-		if strings.Contains(toLowerUrl, "privacy") {
+		if isPrivacyPage(e.Request.URL.Path, e.Text) {
 			privacyPages <- PrivacyPage{
 				URL:   &e.Request.URL.Path,
 				Title: &e.Text,
