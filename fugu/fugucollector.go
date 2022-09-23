@@ -55,6 +55,10 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 	}
 
 	c.OnRequest(func(r *colly.Request) {
+		toLowerUrl := strings.ToLower(r.URL.Path)
+		if strings.Contains(toLowerUrl, "privacy") {
+			// privacy page found
+		}
 		if verbose {
 			fmt.Println("Checking " + r.URL.String())
 		}
