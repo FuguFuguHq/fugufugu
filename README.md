@@ -64,5 +64,3 @@ This checks only 10 pages:
 
 
 will print what fugufugu is currently doing.
-
-**Only use on your own website!**
