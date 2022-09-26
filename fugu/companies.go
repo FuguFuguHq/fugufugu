@@ -55,7 +55,7 @@ func Products() map[string]Product {
 		[]string{"Twitter", "US", "twitter.com", "Social Media", "https://twitter.com/en/privacy"},
 		[]string{"Tilda", "UK", "tildacdn.com", "CMS", "https://tilda.cc/privacy/"},
 		[]string{"Calendly", "US", "calendly.com", "Calendar", "https://calendly.com/privacy"},
-		[]string{"Cloudflare", "US", "cloudflareinsights.com", "Analyrics", "https://www.cloudflare.com/de-de/privacypolicy/"},
+		[]string{"Cloudflare", "US", "cloudflareinsights.com", "Analytics", "https://www.cloudflare.com/de-de/privacypolicy/"},
 		[]string{"Cloudflare", "US", "cloudfront.net", "CDN", "https://www.cloudflare.com/de-de/privacypolicy/"},
 		[]string{"Webflow", "US", "webflow.com", "CMS", "https://webflow.com/legal/privacy"},
 	}
