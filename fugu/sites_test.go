@@ -7,14 +7,14 @@ import (
 )
 
 func TestEmptyFromExternals(t *testing.T) {
-	companies := Companies()
+	products := Products()
 	externals := make(map[string]Privacy)
-	sites := FromExternals(companies, externals)
+	sites := FromExternals(products, externals)
 	assert.Equal(t, 0, len(sites))
 }
 
 func TestOneFromExternals(t *testing.T) {
-	companies := Companies()
+	products := Products()
 	externals := make(map[string]Privacy)
 
 	u := "https://www.googletagmanager.com/gtag/js"
@@ -24,7 +24,7 @@ func TestOneFromExternals(t *testing.T) {
 		Cookie: false,
 	}
 	externals[u] = p
-	sites := FromExternals(companies, externals)
+	sites := FromExternals(products, externals)
 
 	host, _ := url.Parse(u)
 	assert.Equal(t, false, sites[host.Host].Cookie)
@@ -36,7 +36,7 @@ func TestOneFromExternals(t *testing.T) {
 
 func TestThreeFromExternals(t *testing.T) {
 	externals := make(map[string]Privacy)
-	companies := Companies()
+	products := Products()
 
 	u1 := "https://www.googletagmanager.com/1"
 	p1 := Privacy{
@@ -59,7 +59,7 @@ func TestThreeFromExternals(t *testing.T) {
 	externals[u1] = p1
 	externals[u2] = p2
 	externals[u3] = p3
-	sites := FromExternals(companies, externals)
+	sites := FromExternals(products, externals)
 
 	host, _ := url.Parse(u1)
 	assert.Equal(t, false, sites[host.Host].Cookie)

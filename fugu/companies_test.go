@@ -1,26 +1,28 @@
 package fugu
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestCompanies(t *testing.T) {
-	companies := Companies()
+func TestProducts(t *testing.T) {
+	products := Products()
 	url := "scripts.simpleanalyticscdn.com"
-	company := CompanyForUrl(companies, url)
+	product := ProductForUrl(products, url)
 
-	assert.Equal(t, 15, len(companies))
-	assert.NotNil(t, company)
-	assert.Equal(t, "Simple Analytics", company.Name)
+	assert.Equal(t, 16, len(products))
+	assert.NotNil(t, product)
+	assert.Equal(t, "Simple Analytics", product.Company.Name)
 }
 
 func TestCompaniesTwoUrls(t *testing.T) {
 	url := "d3e54v103j8qbb.cloudfront.net"
 
-	companies := Companies()
-	company := CompanyForUrl(companies, url)
+	products := Products()
+	spew.Dump(products)
+	product := ProductForUrl(products, url)
 
-	assert.NotNil(t, company)
-	assert.Equal(t, "Cloudflare", company.Name)
+	assert.NotNil(t, product)
+	assert.Equal(t, "Cloudflare", product.Company.Name)
 }

@@ -9,10 +9,10 @@ import (
 	"sort"
 )
 
-var Companies map[string]fugu.Company
+var Products map[string]fugu.Product
 
 func main() {
-	Companies = fugu.Companies()
+	Products = fugu.Products()
 
 	var checkUrl string
 	var verbose bool
@@ -34,7 +34,7 @@ func main() {
 
 	scanner.Collector.Visit(checkUrl)
 
-	privacies := fugu.FromExternals(Companies, externals)
+	privacies := fugu.FromExternals(Products, externals)
 
 	v := make([]fugu.SitePrivacy, 0, len(privacies))
 
@@ -54,9 +54,9 @@ func main() {
 		t := table.NewWriter()
 		t.SetOutputMirror(os.Stdout)
 		if checkForCookie {
-			t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css", "Cookie"})
+			t.AppendHeader(table.Row{"Site", "Company", "Product", "Country", "Script", "Image", "Css", "Cookie"})
 		} else {
-			t.AppendHeader(table.Row{"Site", "Company", "Country", "Script", "Image", "Css"})
+			t.AppendHeader(table.Row{"Site", "Company", "Product", "Country", "Script", "Image", "Css"})
 		}
 
 		scripts := 0
@@ -69,9 +69,11 @@ func main() {
 			css += p.CssCount
 			country := ""
 			company := ""
-			if p.Company != nil {
-				country = p.Company.Country
-				company = p.Company.Name
+			product := ""
+			if p.Product != nil && p.Product.Company != nil {
+				product = p.Product.Name
+				country = p.Product.Company.Country
+				company = p.Product.Company.Name
 			}
 			c, s, i, css := "", "", "", ""
 			if p.Cookie {
@@ -88,11 +90,11 @@ func main() {
 			}
 			if checkForCookie {
 				t.AppendRows([]table.Row{
-					{*p.Url, company, country, s, i, css, c},
+					{*p.Url, company, product, country, s, i, css, c},
 				})
 			} else {
 				t.AppendRows([]table.Row{
-					{*p.Url, company, country, s, i, css},
+					{*p.Url, company, product, country, s, i, css},
 				})
 			}
 		}

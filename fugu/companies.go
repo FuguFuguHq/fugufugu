@@ -6,15 +6,20 @@ import (
 	"strings"
 )
 
+type Product struct {
+	Name    string
+	Url     string
+	Company *Company
+}
+
 type Company struct {
 	Name    string
 	Country string
-	Urls    []string
 	Privacy string
 }
 
-func CompanyForUrl(companies map[string]Company, u string) *Company {
-	var company Company
+func ProductForUrl(products map[string]Product, u string) *Product {
+	var product Product
 
 	host, err := url.Parse("https://" + u)
 	if err != nil {
@@ -28,91 +33,47 @@ func CompanyForUrl(companies map[string]Company, u string) *Company {
 		return nil
 	}
 	domain := parts[len(parts)-2] + "." + parts[len(parts)-1]
-	company = companies[domain]
-	return &company
+	product = products[domain]
+	return &product
 }
 
-func Companies() map[string]Company {
-	raw := []Company{
-		{
-			Name:    "Stripe",
-			Country: "US",
-			Urls:    []string{"stripe.com"},
-			Privacy: "https://stripe.com/de/privacy",
-		},
-		{
-			Name:    "Mailchimp",
-			Country: "US",
-			Urls:    []string{"stripe.com"},
-			Privacy: "https://mailchimp.com/en/legal/",
-		},
-		{
-			Name:    "sendinblue",
-			Country: "EU",
-			Urls:    []string{"sibforms.com"},
-			Privacy: "https://www.sendinblue.com/legal/privacypolicy/",
-		},
-		{
-			Name:    "Simple Analytics",
-			Country: "EU",
-			Urls:    []string{"simpleanalyticscdn.com"},
-			Privacy: "https://simpleanalytics.com/privacy-policy",
-		},
-		{
-			Name:    "rapidmail",
-			Country: "EU",
-			Urls:    []string{"emailsys1a.net"},
-			Privacy: "https://www.rapidmail.com/data-security",
-		},
-		{
-			Name:    "Google",
-			Country: "US",
-			Urls:    []string{"google.com", "googleapis.com", "gstatic.com", "googletagmanager.com"},
-			Privacy: "",
-		},
-		{
-			Name:    "Squarespace",
-			Country: "US",
-			Urls:    []string{"squarespace.com"},
-			Privacy: "https://www.squarespace.com/privacy",
-		},
-		{
-			Name:    "Twitter",
-			Country: "US",
-			Urls:    []string{"twitter.com"},
-			Privacy: "https://twitter.com/en/privacy",
-		},
-		{
-			Name:    "Tilda",
-			Country: "UK",
-			Urls:    []string{"tildacdn.com"},
-			Privacy: "https://tilda.cc/privacy/",
-		},
-		{
-			Name:    "Calendly",
-			Country: "US",
-			Urls:    []string{"calendly.com"},
-			Privacy: "https://calendly.com/privacy",
-		},
-		{
-			Name:    "Cloudflare",
-			Country: "US",
-			Urls:    []string{"cloudflareinsights.com", "cloudfront.net"},
-			Privacy: "https://www.cloudflare.com/de-de/privacypolicy/",
-		},
-		{
-			Name:    "Webflow",
-			Country: "US",
-			Urls:    []string{"webflow.com"},
-			Privacy: "https://webflow.com/legal/privacy",
-		},
+type ProductRaw struct {
+}
+
+func Products() map[string]Product {
+	rawProducts := [][]string{
+		[]string{"Stripe", "US", "stripe.com", "Payment", "https://stripe.com/de/privacy"},
+		[]string{"Mailchimp", "US", "mailchimp.com", "Newsletter", "https://mailchimp.com/en/legal/"},
+		[]string{"sendinblue", "EU", "sibforms.com", "Newsletter", "https://www.sendinblue.com/legal/privacypolicy/"},
+		[]string{"Simple Analytics", "EU", "simpleanalyticscdn.com", "Analytics", "https://simpleanalytics.com/privacy-policy"},
+		[]string{"rapidmail", "EU", "emailsys1a.net", "Newsletter", "https://www.rapidmail.com/data-security"},
+		[]string{"Google", "US", "google.com", "Google", ""},
+		[]string{"Google", "US", "googleapis.com", "Google", ""},
+		[]string{"Google", "US", "gstatic.com", "Google", ""},
+		[]string{"Google", "US", "googletagmanager.com", "Tagmanager", ""},
+		[]string{"Squarespace", "US", "squarespace.com", "CMS", "https://www.squarespace.com/privacy"},
+		[]string{"Twitter", "US", "twitter.com", "Social Media", "https://twitter.com/en/privacy"},
+		[]string{"Tilda", "UK", "tildacdn.com", "CMS", "https://tilda.cc/privacy/"},
+		[]string{"Calendly", "US", "calendly.com", "Calendar", "https://calendly.com/privacy"},
+		[]string{"Cloudflare", "US", "cloudflareinsights.com", "Analyrics", "https://www.cloudflare.com/de-de/privacypolicy/"},
+		[]string{"Cloudflare", "US", "cloudfront.net", "CDN", "https://www.cloudflare.com/de-de/privacypolicy/"},
+		[]string{"Webflow", "US", "webflow.com", "CMS", "https://webflow.com/legal/privacy"},
 	}
 
-	companies := make(map[string]Company)
-	for _, c := range raw {
-		for _, u := range c.Urls {
-			companies[u] = c
+	products := make(map[string]Product)
+	for _, p := range rawProducts {
+		company := &Company{
+			Name:    p[0],
+			Country: p[1],
+			Privacy: p[4],
 		}
+		product := Product{
+			Name:    p[3],
+			Url:     p[2],
+			Company: company,
+		}
+		products[p[2]] = product
+
 	}
-	return companies
+	return products
 }
