@@ -1,7 +1,6 @@
 package fugu
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,7 +19,6 @@ func TestCompaniesTwoUrls(t *testing.T) {
 	url := "d3e54v103j8qbb.cloudfront.net"
 
 	products := Products()
-	spew.Dump(products)
 	product := ProductForUrl(products, url)
 
 	assert.NotNil(t, product)
