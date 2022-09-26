@@ -63,7 +63,7 @@ func Products() map[string]Product {
 		[]string{"storyblok", "EU", "storyblok.com", "CMS", "https://www.storyblok.com/legal/privacy-policy"},
 		[]string{"Zendesk", "US", "zdassets.com", "Helpdesk", "https://www.zendesk.com/company/agreements-and-terms/privacy-policy-2021-12-06/"},
 	}
-	q
+
 	products := make(map[string]Product)
 	for _, p := range rawProducts {
 		company := &Company{

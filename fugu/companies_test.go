@@ -10,7 +10,7 @@ func TestProducts(t *testing.T) {
 	url := "scripts.simpleanalyticscdn.com"
 	product := ProductForUrl(products, url)
 
-	assert.Equal(t, 16, len(products))
+	assert.Equal(t, 20, len(products))
 	assert.NotNil(t, product)
 	assert.Equal(t, "Simple Analytics", product.Company.Name)
 }
