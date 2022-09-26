@@ -111,6 +111,6 @@ func main() {
 		}
 
 		t.Render()
-		fmt.Printf("Summary %s: %d pages | %d scripts | %d images | %d css\n", checkUrl, *scanner.Pages, scripts, images, css)
+		fmt.Printf("Summary %s: %d pages - External resources: %d scripts | %d images | %d css\n", checkUrl, *scanner.Pages, scripts, images, css)
 	}
 }
