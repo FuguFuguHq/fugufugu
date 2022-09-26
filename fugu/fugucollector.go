@@ -3,6 +3,7 @@ package fugu
 import (
 	"fmt"
 	"github.com/gocolly/colly/v2"
+	"github.com/thoas/go-funk"
 	"io"
 	"log"
 	"net/http"
@@ -71,7 +72,9 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 	go func() {
 		for {
 			page, more := <-privacyPages
-			if more {
+			if more && !funk.Contains(*scanner.PrivacyPages, func(p *PrivacyPage) bool {
+				return p.URL == page.URL
+			}) {
 				*scanner.PrivacyPages = append(*scanner.PrivacyPages, page)
 			}
 		}
