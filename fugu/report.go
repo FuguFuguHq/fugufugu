@@ -106,10 +106,6 @@ func ReportFromScanner(checkUrl string, checkForCookie bool, privacies map[strin
 		return v[i].Rank > v[j].Rank
 	})
 
-	scripts := 0
-	images := 0
-	css := 0
-
 	r := Report{
 		Url:            checkUrl,
 		PageCount:      *scanner.Pages,
@@ -119,9 +115,9 @@ func ReportFromScanner(checkUrl string, checkForCookie bool, privacies map[strin
 	}
 
 	for _, p := range v {
-		scripts += p.ScriptCount
-		images += p.ImgCount
-		css += p.CssCount
+		r.ScriptCount += p.ScriptCount
+		r.ImageCount += p.ImgCount
+		r.CssCount += p.CssCount
 		country := ""
 		company := ""
 		product := ""
@@ -143,9 +139,6 @@ func ReportFromScanner(checkUrl string, checkForCookie bool, privacies map[strin
 		}
 		r.Externals = append(r.Externals, rl)
 	}
-	r.ImageCount = images
-	r.ScriptCount = scripts
-	r.CssCount = css
 
 	if len(*scanner.PrivacyPages) > 0 {
 		for _, page := range *scanner.PrivacyPages {

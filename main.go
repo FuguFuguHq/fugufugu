@@ -28,7 +28,6 @@ func main() {
 	}
 
 	externals := make(map[string]fugu.Privacy)
-
 	scanner := fugu.NewCollector(maxPages, checkForCookie, checkUrl, externals, verbose)
 	scanner.Collector.Visit(checkUrl)
 
