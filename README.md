@@ -31,13 +31,13 @@ prints a report of privacy pages and all external scripts and images it found.
 +--------------+----------------------+
 | /privacy/    | Datenschutzerklärung |
 +--------------+----------------------+
-+--------------------------------+------------------+---------+--------+-------+-----+
-| SITE                           | COMPANY          | COUNTRY | SCRIPT | IMAGE | CSS |
-+--------------------------------+------------------+---------+--------+-------+-----+
-| scripts.simpleanalyticscdn.com | Simple Analytics | EU      | Yes    |       |     |
-| t5972a59c.emailsys1a.net       | rapidmail        | EU      | Yes    |       |     |
-+--------------------------------+------------------+---------+--------+-------+-----+
-Summary https://www.amazingcto.com: 38 pages | 2 scripts | 1 images | 0 css
++--------------------------------+------------------+------------+---------+--------+-------+-----+
+| SITE                           | COMPANY          | PRODUCT    | COUNTRY | SCRIPT | IMAGE | CSS |
++--------------------------------+------------------+------------+---------+--------+-------+-----+
+| scripts.simpleanalyticscdn.com | Simple Analytics | Analytics  | EU      | Yes    |       |     |
+| t5972a59c.emailsys1a.net       | rapidmail        | Newsletter | EU      | Yes    |       |     |
++--------------------------------+------------------+------------+---------+--------+-------+-----+
+Summary https://www.amazingcto.com: 38 pages - External resources: 2 scripts | 1 images | 0 css
 ```
 
 ## Verbose
