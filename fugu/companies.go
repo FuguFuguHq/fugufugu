@@ -55,11 +55,15 @@ func Products() map[string]Product {
 		[]string{"Twitter", "US", "twitter.com", "Social Media", "https://twitter.com/en/privacy"},
 		[]string{"Tilda", "UK", "tildacdn.com", "CMS", "https://tilda.cc/privacy/"},
 		[]string{"Calendly", "US", "calendly.com", "Calendar", "https://calendly.com/privacy"},
+		[]string{"Cloudflare", "US", "cdnjns.cloudflare.com", "CDN", "https://www.cloudflare.com/de-de/privacypolicy/"},
 		[]string{"Cloudflare", "US", "cloudflareinsights.com", "Analytics", "https://www.cloudflare.com/de-de/privacypolicy/"},
 		[]string{"Cloudflare", "US", "cloudfront.net", "CDN", "https://www.cloudflare.com/de-de/privacypolicy/"},
 		[]string{"Webflow", "US", "webflow.com", "CMS", "https://webflow.com/legal/privacy"},
+		[]string{"Amazon", "US", "s3.amazonaws.com", "Cloud Storage", "https://aws.amazon.com/privacy/"},
+		[]string{"storyblok", "EU", "storyblok.com", "CMS", "https://www.storyblok.com/legal/privacy-policy"},
+		[]string{"Zendesk", "US", "zdassets.com", "Helpdesk", "https://www.zendesk.com/company/agreements-and-terms/privacy-policy-2021-12-06/"},
 	}
-
+	q
 	products := make(map[string]Product)
 	for _, p := range rawProducts {
 		company := &Company{
