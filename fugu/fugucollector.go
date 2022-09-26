@@ -121,6 +121,9 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 					Typ:    "Image",
 					Cookie: hasCookie,
 				}
+				if verbose {
+					fmt.Println("External image " + link)
+				}
 			}
 		}
 	})
@@ -132,11 +135,13 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 				hasCookie := false
 				if checkForCookie {
 					hasCookie = CheckCookie(checkUrl, verbose)
-				} else {
-					externals[link] = Privacy{
-						Typ:    "Script",
-						Cookie: hasCookie,
-					}
+				}
+				externals[link] = Privacy{
+					Typ:    "Script",
+					Cookie: hasCookie,
+				}
+				if verbose {
+					fmt.Println("External script " + link)
 				}
 			}
 		}
@@ -146,7 +151,7 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 		link := e.Attr("href")
 		rel := e.Attr("rel")
 		if _, ok := externals[link]; !ok {
-			if len(rel) > 0 && rel == "stylesheet" {
+			if len(rel) > 0 && strings.ToLower(rel) == "stylesheet" {
 				hasCookie := false
 				cssLink := ""
 				if !strings.HasPrefix(link, "http") {
@@ -170,7 +175,7 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 						if err != nil {
 							log.Println(err)
 						} else {
-							imports := ImportsFromCss(string(b))
+							imports := ImportsFromCss(string(b), verbose)
 							for _, i := range imports {
 								externals[i] = Privacy{
 									Typ: "Css",
@@ -186,6 +191,9 @@ func NewCollector(maxPages uint64, checkForCookie bool, checkUrl string, externa
 					externals[link] = Privacy{
 						Typ:    "Css",
 						Cookie: hasCookie,
+					}
+					if verbose {
+						fmt.Println("External CSS: " + link)
 					}
 				}
 
