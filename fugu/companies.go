@@ -57,6 +57,7 @@ func Products() map[string]Product {
 		[]string{"Google", "US", "googleapis.com", "Google", ""},
 		[]string{"Google", "US", "gstatic.com", "Google", ""},
 		[]string{"Google", "US", "google-analytics.com", "Google Analytics", ""},
+		[]string{"Google", "US", "stats.g.doubleclick.net", "Google Analytics", ""},
 		// probably also analytics, how to detect?
 		// https://www.googletagmanager.com/gtag/js
 		// Always GA included?
