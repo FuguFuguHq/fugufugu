@@ -25,15 +25,20 @@ func ProductForUrl(products map[string]Product, u string) *Product {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	// used publixprefix but it's a mess so
+	// used publicprefix but it's a mess so
 	// we create another mess :-)
 	// will not work for e.g. co.uk
 	parts := strings.Split(host.Hostname(), ".")
 	if len(parts) < 2 {
 		return nil
 	}
-	domain := parts[len(parts)-2] + "." + parts[len(parts)-1]
-	product = products[domain]
+
+	i := 0
+	found := false
+	for i <= len(parts)-2 && !found {
+		product, found = products[strings.Join(parts[i:], ".")]
+		i += 1
+	}
 	return &product
 }
 
@@ -47,6 +52,7 @@ func Products() map[string]Product {
 		[]string{"sendinblue", "EU", "sibforms.com", "Newsletter", "https://www.sendinblue.com/legal/privacypolicy/"},
 		[]string{"Simple Analytics", "EU", "simpleanalyticscdn.com", "Analytics", "https://simpleanalytics.com/privacy-policy"},
 		[]string{"rapidmail", "EU", "emailsys1a.net", "Newsletter", "https://www.rapidmail.com/data-security"},
+		[]string{"Google", "US", "fonts.googleapis.com", "Google Fonts", ""},
 		[]string{"Google", "US", "google.com", "Google", ""},
 		[]string{"Google", "US", "googleapis.com", "Google", ""},
 		[]string{"Google", "US", "gstatic.com", "Google", ""},
