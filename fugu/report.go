@@ -17,6 +17,7 @@ type Report struct {
 
 	Externals    []ReportExternal
 	PrivacyPages []ReportPrivacyPage
+	Warnings     []string
 }
 
 type ReportPrivacyPage struct {
@@ -88,13 +89,15 @@ func PrintReport(r Report) {
 			}
 		}
 		t.Render()
-
 		fmt.Printf("Summary %s: %d pages - External resources: %d scripts | %d images | %d css\n", r.Url, r.PageCount, r.ScriptCount,
 			r.ImageCount, r.CssCount)
+		for _, w := range r.Warnings {
+			fmt.Println("WARNING: " + w)
+		}
 	}
 }
 
-func ReportFromScanner(checkUrl string, checkForCookie bool, privacies map[string]SitePrivacy, scanner Scanner) Report {
+func ReportFromScanner(checkUrl string, checkForCookie bool, euCheck bool, privacies map[string]SitePrivacy, scanner Scanner) Report {
 	v := make([]SitePrivacy, 0, len(privacies))
 
 	for _, value := range privacies {
@@ -147,6 +150,16 @@ func ReportFromScanner(checkUrl string, checkForCookie bool, privacies map[strin
 				Title: *page.Title,
 			}
 			r.PrivacyPages = append(r.PrivacyPages, rpp)
+		}
+	}
+
+	if euCheck {
+		googleFontsFound := false
+		for _, e := range r.Externals {
+			googleFontsFound = googleFontsFound || e.Product == "Google Fonts"
+		}
+		if googleFontsFound {
+			r.Warnings = append(r.Warnings, "Google Fonts found")
 		}
 	}
 	return r
